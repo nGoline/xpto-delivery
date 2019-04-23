@@ -1,6 +1,8 @@
 using System;
+using System.Linq;
 using System.Threading.Tasks;
 using domain.contexts;
+using domain.entities;
 using domain.repositories;
 using Microsoft.Data.Sqlite;
 using Microsoft.EntityFrameworkCore;
@@ -8,43 +10,81 @@ using Xunit;
 
 namespace tests.repositoryTests
 {
-    public class MapPointRepositoryTests
+    public class MapPointRepositoryTests : IDisposable
     {
-        private static SqliteConnection _connection;
-        private static DbContextOptions _dbOptions;
-        private static MainContext _context;
-        private static MapPointRepository _mapPointRepository;
+        private readonly MainContextFactory _contextFactory;
+        
+        private Guid _mapPointId;
 
         public MapPointRepositoryTests()
         {
-            string id = string.Format("{0}.db", Guid.NewGuid().ToString());
-            var connectionStringBuilder = new SqliteConnectionStringBuilder
-            {
-                DataSource = id,
-                Mode = SqliteOpenMode.Memory,
-                Cache = SqliteCacheMode.Shared
-            };
-
-            _connection = new SqliteConnection(connectionStringBuilder.ConnectionString);
-            _connection.Open();
-            _connection.EnableExtensions();
-            _dbOptions = new DbContextOptionsBuilder<MainContext>()
-                        .UseSqlite(_connection)
-                        .Options;
-            _context = new MainContext(_dbOptions);
-            Assert.True(_context.Database.EnsureCreated());
-            _context.Database.Migrate();
-            _context.ChangeTracker.AcceptAllChanges();
-            _context.SaveChanges();
-            _mapPointRepository = new MapPointRepository(_context);
+            _contextFactory = new MainContextFactory();
         }
 
         [Fact]
         public async Task DatabaseIsEmpty()
         {
-            var mapPoints = await _mapPointRepository.GetAllAsync();
+            using (var context = _contextFactory.CreateContext())
+            {
+                var mapRepository = new MapPointRepository(context);
 
-            Assert.Empty(mapPoints);
+                var mapPoints = await mapRepository.GetAllAsync();
+
+                Assert.Empty(mapPoints);
+            }
+        }
+
+        [Fact]
+        public async Task ShouldCreateEntry()
+        {
+            var mapPoint = new MapPointEntity("Test Point 1", -43.45554434, -110.04886744);
+            using (var context = _contextFactory.CreateContext())
+            {
+                var mapRepository = new MapPointRepository(context);
+
+                await mapRepository.AddAsync(mapPoint);
+                await mapRepository.SaveChangesAsync();
+
+                Assert.NotEqual(Guid.Empty, mapPoint.Id);
+            }
+
+            using (var context = _contextFactory.CreateContext())
+            {
+                var mapRepository = new MapPointRepository(context);
+
+                var fetchedMapPoint = await mapRepository.FindMapPointByIdAsync(mapPoint.Id);
+                Assert.Equal(mapPoint.Name, fetchedMapPoint.Name);
+                Assert.Equal(mapPoint.Latitude, fetchedMapPoint.Latitude);
+                Assert.Equal(mapPoint.Longitude, fetchedMapPoint.Longitude);
+
+                _mapPointId = fetchedMapPoint.Id;
+            }
+        }
+
+        [Fact]
+        public async Task ShouldDeleteEntry()
+        {
+            using (var context = _contextFactory.CreateContext())
+            {
+                var mapRepository = new MapPointRepository(context);
+
+                await mapRepository.RemoveByAsync(mp => mp.Id.Equals(_mapPointId));
+                await mapRepository.SaveChangesAsync();
+            }
+
+            using (var context = _contextFactory.CreateContext())
+            {
+                var mapRepository = new MapPointRepository(context);
+
+                var mapPoint = await mapRepository.FindMapPointByIdAsync(_mapPointId);
+
+                Assert.Null(mapPoint);
+            }
+        }
+
+        public void Dispose()
+        {
+            _contextFactory.Dispose();
         }
     }
 }

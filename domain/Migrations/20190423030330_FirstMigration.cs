@@ -36,12 +36,12 @@ namespace domain.Migrations
             migrationBuilder.InsertData(
                 table: "Users",
                 columns: new[] { "Id", "Name" },
-                values: new object[] { new Guid("b6e07e28-3f4f-45e9-a539-0fbc5900edc8"), "Jane" });
+                values: new object[] { new Guid("0b3316c7-4944-4819-aa20-1f127abf6998"), "Jane" });
 
             migrationBuilder.InsertData(
                 table: "Users",
                 columns: new[] { "Id", "Name" },
-                values: new object[] { new Guid("69eb2c3e-5288-45bf-bd60-2b0cb822bb4e"), "John" });
+                values: new object[] { new Guid("a8a942aa-9269-42ac-b92d-6b7c9f33feeb"), "John" });
         }
 
         protected override void Down(MigrationBuilder migrationBuilder)

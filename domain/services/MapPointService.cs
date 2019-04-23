@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 using domain.entities;
@@ -22,9 +23,14 @@ namespace domain.services
         /// Gets all MapPoints
         /// </summary>
         /// <returns>Users list</returns>
-        public async Task<IEnumerable<MapPointEntity>> GetMapPoints()
+        public async Task<IEnumerable<MapPointEntity>> GetAllMapPointsAsync()
         {
             return await _mapPointRepository.GetAllAsync(true);
+        }
+
+        public async Task<MapPointEntity> FindMapPointByIdAsync(Guid id)
+        {
+            return await _mapPointRepository.FindMapPointByIdAsync(id);
         }
     }
 }

@@ -9,7 +9,7 @@ using domain.contexts;
 namespace domain.Migrations
 {
     [DbContext(typeof(MainContext))]
-    [Migration("20190423015946_FirstMigration")]
+    [Migration("20190423030330_FirstMigration")]
     partial class FirstMigration
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -50,12 +50,12 @@ namespace domain.Migrations
                     b.HasData(
                         new
                         {
-                            Id = new Guid("b6e07e28-3f4f-45e9-a539-0fbc5900edc8"),
+                            Id = new Guid("0b3316c7-4944-4819-aa20-1f127abf6998"),
                             Name = "Jane"
                         },
                         new
                         {
-                            Id = new Guid("69eb2c3e-5288-45bf-bd60-2b0cb822bb4e"),
+                            Id = new Guid("a8a942aa-9269-42ac-b92d-6b7c9f33feeb"),
                             Name = "John"
                         });
                 });
