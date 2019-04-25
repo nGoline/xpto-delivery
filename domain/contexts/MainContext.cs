@@ -19,6 +19,12 @@ namespace domain.contexts
         public DbSet<MapPointEntity> MapPoints { get; set; }
 
         /// <summary>
+        /// Route DbSet that represents the database entries
+        /// </summary>
+        /// <value></value>
+        public DbSet<RouteEntity> Routes { get; set; }
+
+        /// <summary>
         /// Context constructor takes DbContextOptions needed from IoC injection
         /// </summary>
         /// <param name="options"></param>
@@ -40,12 +46,9 @@ namespace domain.contexts
                 new UserEntity
                 {
                     Id = Guid.NewGuid(),
-                    Name = "Jane"
-                },
-                new UserEntity
-                {
-                    Id = Guid.NewGuid(),
-                    Name = "John"
+                    Name = "Test",
+                    Email = "test@xpto.com",
+                    Password = "123456"
                 }
             );
 
@@ -70,6 +73,32 @@ namespace domain.contexts
                  .IsRequired();
                 b.Property(mp => mp.Longitude)
                  .IsRequired();
+            });
+
+            // RouteRules
+            modelBuilder.Entity<RouteEntity>(b =>
+            {
+                // Setup table
+                b.ToTable("Routes");
+
+                // Sets required fields
+                b.Property(r => r.FromId)
+                 .IsRequired();
+
+                b.Property(r => r.ToId)
+                 .IsRequired();
+
+                // Sets relationship
+                b.HasOne(r => r.From)
+                 .WithMany()
+                 .HasForeignKey(r => r.FromId);
+
+                b.HasOne(r => r.To)
+                 .WithMany()
+                 .HasForeignKey(r => r.ToId);
+
+                b.HasMany(r => r.Points)
+                 .WithOne();
             });
         }
     }

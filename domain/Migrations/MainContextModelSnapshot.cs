@@ -28,9 +28,33 @@ namespace domain.Migrations
                     b.Property<string>("Name")
                         .IsRequired();
 
+                    b.Property<Guid?>("RouteEntityId");
+
                     b.HasKey("Id");
 
+                    b.HasIndex("RouteEntityId");
+
                     b.ToTable("MapPoints");
+                });
+
+            modelBuilder.Entity("domain.entities.RouteEntity", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd();
+
+                    b.Property<double>("Cost");
+
+                    b.Property<Guid>("FromId");
+
+                    b.Property<Guid>("ToId");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("FromId");
+
+                    b.HasIndex("ToId");
+
+                    b.ToTable("Routes");
                 });
 
             modelBuilder.Entity("domain.entities.UserEntity", b =>
@@ -48,14 +72,34 @@ namespace domain.Migrations
                     b.HasData(
                         new
                         {
-                            Id = new Guid("0b3316c7-4944-4819-aa20-1f127abf6998"),
+                            Id = new Guid("9288af0b-d6c7-4e72-a31d-092aff99a27a"),
                             Name = "Jane"
                         },
                         new
                         {
-                            Id = new Guid("a8a942aa-9269-42ac-b92d-6b7c9f33feeb"),
+                            Id = new Guid("5bb83526-75f6-49f6-87b0-46d032ed7c5c"),
                             Name = "John"
                         });
+                });
+
+            modelBuilder.Entity("domain.entities.MapPointEntity", b =>
+                {
+                    b.HasOne("domain.entities.RouteEntity")
+                        .WithMany("Points")
+                        .HasForeignKey("RouteEntityId");
+                });
+
+            modelBuilder.Entity("domain.entities.RouteEntity", b =>
+                {
+                    b.HasOne("domain.entities.MapPointEntity", "From")
+                        .WithMany()
+                        .HasForeignKey("FromId")
+                        .OnDelete(DeleteBehavior.Cascade);
+
+                    b.HasOne("domain.entities.MapPointEntity", "To")
+                        .WithMany()
+                        .HasForeignKey("ToId")
+                        .OnDelete(DeleteBehavior.Cascade);
                 });
 #pragma warning restore 612, 618
         }

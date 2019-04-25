@@ -10,30 +10,24 @@ namespace domain.contexts
     public class MainContextFactory : IDesignTimeDbContextFactory<MainContext>, IDisposable
     {
         private DbConnection _connection;
-        private bool _disposed = false;
-
+        
         private DbContextOptions<MainContext> CreateOptions()
         {
             return new DbContextOptionsBuilder<MainContext>()
-                .UseSqlite(_connection).Options;
+                .UseInMemoryDatabase("Database 1")
+                .Options;
         }
-        
+
         public MainContext CreateDbContext(string[] args)
         {
             return CreateContext();
         }
         public MainContext CreateContext()
         {
-            if (_connection == null)
+            var options = CreateOptions();
+            using (var context = new MainContext(options))
             {
-                _connection = new SqliteConnection("DataSource=:memory:");
-                _connection.Open();
-
-                var options = CreateOptions();
-                using (var context = new MainContext(options))
-                {
-                    context.Database.EnsureCreated();
-                }
+                context.Database.EnsureCreated();
             }
 
             return new MainContext(CreateOptions());
@@ -41,21 +35,8 @@ namespace domain.contexts
 
         public void Dispose()
         {
-            Dispose(true);
-            GC.SuppressFinalize(this);
-        }
-
-        protected virtual void Dispose(bool disposing)
-        {
-            if (_disposed)
-                return;
-
-            if (disposing)
-            {
+            if (_connection != null)
                 _connection.Dispose();
-            }
-
-            _disposed = true;
         }
     }
 }

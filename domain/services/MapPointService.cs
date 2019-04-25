@@ -6,31 +6,39 @@ using domain.repositories;
 
 namespace domain.services
 {
-    public class MapPointService
+    public class MapPointService : ServiceBase<MapPointEntity>
     {
-        private readonly MapPointRepository _mapPointRepository;
+        private MapPointRepository _mapPointRepository;
 
         /// <summary>
         /// Service constructor takes Repositories needed from IoC injection
         /// </summary>
         /// <param name="mapPointRepository">MapPointRepository object</param>
         public MapPointService(MapPointRepository mapPointRepository)
+            : base(mapPointRepository)
         {
             _mapPointRepository = mapPointRepository;
         }
 
-        /// <summary>
-        /// Gets all MapPoints
-        /// </summary>
-        /// <returns>Users list</returns>
-        public async Task<IEnumerable<MapPointEntity>> GetAllMapPointsAsync()
+        public async Task UpdateAsync(MapPointEntity mapPoint)
         {
-            return await _mapPointRepository.GetAllAsync(true);
-        }
+            var oldMapPoint = await _mapPointRepository.FindByIdAsync(mapPoint.Id);
+            if (oldMapPoint.Name != mapPoint.Name)
+                oldMapPoint.Name = mapPoint.Name;
+            
+            if (oldMapPoint.Name != mapPoint.Name)
+                oldMapPoint.Name = mapPoint.Name;
 
-        public async Task<MapPointEntity> FindMapPointByIdAsync(Guid id)
-        {
-            return await _mapPointRepository.FindMapPointByIdAsync(id);
+            if (oldMapPoint.Latitude != mapPoint.Latitude)
+                oldMapPoint.Latitude = mapPoint.Latitude;
+
+            if (oldMapPoint.Longitude != mapPoint.Longitude)
+                oldMapPoint.Longitude = mapPoint.Longitude;
+
+            oldMapPoint.Validate(false);
+
+            await _mapPointRepository.UpdateAsync(oldMapPoint);
+            await _mapPointRepository.SaveChangesAsync();
         }
     }
 }

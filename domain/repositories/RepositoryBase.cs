@@ -56,6 +56,32 @@ namespace domain.repositories
             }
         }
 
+        public virtual async Task<TEntity> FindByIdAsync(Guid id, bool asNoTracking = true, Expression<Func<TEntity, object>> include = null)
+        {
+            if (asNoTracking)
+            {
+                if (include == null)
+                    return await DbSet.AsNoTracking()
+                                      .FirstOrDefaultAsync(x => x.Id.Equals(id))
+                                      .ConfigureAwait(false);
+                else
+                    return await DbSet.Include(include)
+                                      .AsNoTracking()
+                                      .FirstOrDefaultAsync(x => x.Id.Equals(id))
+                                      .ConfigureAwait(false);
+            }
+            else
+            {
+                if (include == null)
+                    return await DbSet.FirstOrDefaultAsync(x => x.Id.Equals(id))
+                                      .ConfigureAwait(false);
+                else
+                    return await DbSet.Include(include)
+                                      .FirstOrDefaultAsync(x => x.Id.Equals(id))
+                                      .ConfigureAwait(false);
+            }
+        }
+
         /// <summary>
         /// Queues the insert of a new entry to the table
         /// </summary>

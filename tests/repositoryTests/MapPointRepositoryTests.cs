@@ -6,10 +6,13 @@ using domain.entities;
 using domain.repositories;
 using Microsoft.Data.Sqlite;
 using Microsoft.EntityFrameworkCore;
+using tests.helpers;
 using Xunit;
 
 namespace tests.repositoryTests
 {
+    
+    [TestCaseOrderer("tests.helpers.PriorityOrderer", "tests")]
     public class MapPointRepositoryTests : IDisposable
     {
         private readonly MainContextFactory _contextFactory;
@@ -21,7 +24,7 @@ namespace tests.repositoryTests
             _contextFactory = new MainContextFactory();
         }
 
-        [Fact]
+        [Fact, TestPriority(0)]
         public async Task DatabaseIsEmpty()
         {
             using (var context = _contextFactory.CreateContext())
@@ -34,7 +37,7 @@ namespace tests.repositoryTests
             }
         }
 
-        [Fact]
+        [Fact, TestPriority(1)]
         public async Task ShouldCreateEntry()
         {
             var mapPoint = new MapPointEntity("Test Point 1", -43.45554434, -110.04886744);
@@ -52,7 +55,7 @@ namespace tests.repositoryTests
             {
                 var mapRepository = new MapPointRepository(context);
 
-                var fetchedMapPoint = await mapRepository.FindMapPointByIdAsync(mapPoint.Id);
+                var fetchedMapPoint = await mapRepository.FindByIdAsync(mapPoint.Id);
                 Assert.Equal(mapPoint.Name, fetchedMapPoint.Name);
                 Assert.Equal(mapPoint.Latitude, fetchedMapPoint.Latitude);
                 Assert.Equal(mapPoint.Longitude, fetchedMapPoint.Longitude);
@@ -61,7 +64,7 @@ namespace tests.repositoryTests
             }
         }
 
-        [Fact]
+        [Fact, TestPriority(2)]
         public async Task ShouldDeleteEntry()
         {
             using (var context = _contextFactory.CreateContext())
@@ -76,7 +79,7 @@ namespace tests.repositoryTests
             {
                 var mapRepository = new MapPointRepository(context);
 
-                var mapPoint = await mapRepository.FindMapPointByIdAsync(_mapPointId);
+                var mapPoint = await mapRepository.FindByIdAsync(_mapPointId);
 
                 Assert.Null(mapPoint);
             }

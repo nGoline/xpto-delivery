@@ -10,6 +10,8 @@ namespace domain.entities
         /// </summary>
         /// <value></value>
         public string Name { get; set; }
+        public string Email { get; set; }
+        public string Password { get; set; }
 
         /// <summary>
         /// Default User constructor for Entity Framework

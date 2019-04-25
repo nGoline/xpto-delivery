@@ -3,6 +3,7 @@ using domain.entities;
 
 namespace domain.dto
 {
+    [Serializable]
     public class MapPointDTO
     {
         public Guid Id { get; set; }

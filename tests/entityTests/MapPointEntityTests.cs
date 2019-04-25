@@ -44,6 +44,46 @@ namespace tests.entityTests
         }
 
         [Fact]
+        public void ShouldNotCreateFromInvalidValues()
+        {
+            Assert.Throws(typeof(ArgumentOutOfRangeException), () =>
+            {
+                new MapPointEntity(_name, -300, _longitude);
+            });
+            Assert.Throws(typeof(ArgumentOutOfRangeException), () =>
+            {
+                new MapPointEntity(_name, -_latitude, 300);
+            });
+            
+            Assert.Throws(typeof(NullReferenceException), () =>
+            {
+                new MapPointEntity(string.Empty, -_latitude, _longitude);
+            });
+            Assert.Throws(typeof(NullReferenceException), () =>
+            {
+                new MapPointEntity(" ", -_latitude, _longitude);
+            });
+
+            var mapPoint = new MapPointEntity();
+            Assert.Throws(typeof(ArgumentOutOfRangeException), () =>
+            {
+                mapPoint.Latitude = -300;
+            });
+            Assert.Throws(typeof(ArgumentOutOfRangeException), () =>
+            {
+                mapPoint.Longitude = -300;
+            });            
+            Assert.Throws(typeof(NullReferenceException), () =>
+            {
+                mapPoint.Name = string.Empty;
+            });
+            Assert.Throws(typeof(NullReferenceException), () =>
+            {
+                mapPoint.Name = " ";
+            });         
+        }
+
+        [Fact]
         public void MustCreateDto()
         {
             var mapPoint = new MapPointEntity(_name, _latitude, _longitude);

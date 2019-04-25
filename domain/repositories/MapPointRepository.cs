@@ -11,11 +11,5 @@ namespace domain.repositories
         public MapPointRepository(MainContext context) : base(context)
         {
         }
-
-        public async Task<MapPointEntity> FindMapPointByIdAsync(Guid id)
-        {
-            return await DbSet.AsNoTracking().FirstOrDefaultAsync(d => d.Id.Equals(id));
-        }
-
     }
 }
