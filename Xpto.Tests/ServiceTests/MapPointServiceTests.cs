@@ -13,82 +13,50 @@ using Xpto.Data.Context;
 using Moq;
 using Xpto.Domain.Interfaces.Repository;
 using System.Collections.Generic;
+using Xpto.Domain.Interfaces.Service;
+using Xpto.Tests.Fake;
 
 namespace Xpto.Tests.ServiceTests
 {
     [TestCaseOrderer("Xpto.Tests.Common.PriorityOrderer", "Xpto.Tests")]
     public class MapPointServiceTests
     {
-        private IContextFactory<XptoContext> _contextFactory;
+        private IMapPointRepository _repository;
+        private IMapPointService _service;
         private Guid _mapPointId;
 
         public MapPointServiceTests()
         {
-            _contextFactory = new ContextFactory<XptoContext>();
+            _repository = new FakeMapPointRepository();
+            
+            _service = new MapPointService(_repository, new FakeRouteService());
         }
 
         [Fact, TestPriority(0)]
-        public async Task DatabaseIsEmpty()
-        {
-            var mockRepo = new Mock<IMapPointRepository>();
-            mockRepo.Setup(repo => repo.GetAllAsync(true, null))
-                .ReturnsAsync(() => { return new List<MapPoint>(); });
-
-            var mapService = new MapPointService(mockRepo.Object);
-
-            var mapPoints = await mapService.GetAllAsync();
-
-            Assert.Empty(mapPoints);
-        }
-
-        [Fact, TestPriority(1)]
         public async Task ShouldCreateEntry()
         {
             var mapPoint = new MapPoint("Test Point 1", -43.45554434, -110.04886744);
-            using (var context = _contextFactory.CreateDbContext())
-            {
-                var mapRepository = new MapPointRepository(context);
-                var mapService = new MapPointService(mapRepository);
 
-                await mapService.AddAsync(mapPoint);
+            await _service.AddAsync(mapPoint);
 
-                Assert.NotEqual(Guid.Empty, mapPoint.Id);
-            }
+            Assert.NotEqual(Guid.Empty, mapPoint.Id);
 
-            using (var context = _contextFactory.CreateDbContext())
-            {
-                var mapRepository = new MapPointRepository(context);
-                var mapService = new MapPointService(mapRepository);
+            var fetchedMapPoint = await _repository.GetByIdAsync(mapPoint.Id);
+            Assert.Equal(mapPoint.Name, fetchedMapPoint.Name);
+            Assert.Equal(mapPoint.Latitude, fetchedMapPoint.Latitude);
+            Assert.Equal(mapPoint.Longitude, fetchedMapPoint.Longitude);
 
-                var fetchedMapPoint = await mapRepository.GetByIdAsync(mapPoint.Id);
-                Assert.Equal(mapPoint.Name, fetchedMapPoint.Name);
-                Assert.Equal(mapPoint.Latitude, fetchedMapPoint.Latitude);
-                Assert.Equal(mapPoint.Longitude, fetchedMapPoint.Longitude);
-
-                _mapPointId = fetchedMapPoint.Id;
-            }
+            _mapPointId = fetchedMapPoint.Id;
         }
 
-        [Fact, TestPriority(2)]
+        [Fact, TestPriority(1)]
         public async Task ShouldDeleteEntry()
         {
-            using (var context = _contextFactory.CreateDbContext())
-            {
-                var mapRepository = new MapPointRepository(context);
-                var mapService = new MapPointService(mapRepository);
+            await _service.DeleteByIdAsync(_mapPointId);
 
-                await mapService.DeleteByIdAsync(_mapPointId);
-            }
+            var mapPoint = await _service.GetByIdAsync(_mapPointId);
 
-            using (var context = _contextFactory.CreateDbContext())
-            {
-                var mapRepository = new MapPointRepository(context);
-                var mapService = new MapPointService(mapRepository);
-
-                var mapPoint = await mapService.GetByIdAsync(_mapPointId);
-
-                Assert.Null(mapPoint);
-            }
+            Assert.Null(mapPoint);
         }
     }
 }

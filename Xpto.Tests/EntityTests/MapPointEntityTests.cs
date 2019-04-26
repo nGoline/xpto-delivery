@@ -46,41 +46,21 @@ namespace Xpto.Tests.EntityTests
         [Fact]
         public void ShouldNotCreateFromInvalidValues()
         {
-            Assert.Throws(typeof(ArgumentOutOfRangeException), () =>
-            {
-                new MapPoint(_name, -300, _longitude);
-            });
-            Assert.Throws(typeof(ArgumentOutOfRangeException), () =>
-            {
-                new MapPoint(_name, -_latitude, 300);
-            });
-            
-            Assert.Throws(typeof(NullReferenceException), () =>
-            {
-                new MapPoint(string.Empty, -_latitude, _longitude);
-            });
-            Assert.Throws(typeof(NullReferenceException), () =>
-            {
-                new MapPoint(" ", -_latitude, _longitude);
-            });
-
+            Assert.False(new MapPoint(_name, -300, _longitude).IsValid);
+            Assert.False(new MapPoint(_name, -_latitude, 300).IsValid);
+            Assert.False(new MapPoint(string.Empty, -_latitude, _longitude).IsValid);
+            Assert.False(new MapPoint(" ", -_latitude, _longitude).IsValid);
             var mapPoint = new MapPoint();
-            Assert.Throws(typeof(ArgumentOutOfRangeException), () =>
-            {
-                mapPoint.Latitude = -300;
-            });
-            Assert.Throws(typeof(ArgumentOutOfRangeException), () =>
-            {
-                mapPoint.Longitude = -300;
-            });            
-            Assert.Throws(typeof(NullReferenceException), () =>
-            {
-                mapPoint.Name = string.Empty;
-            });
-            Assert.Throws(typeof(NullReferenceException), () =>
-            {
-                mapPoint.Name = " ";
-            });         
+            mapPoint.Latitude = -300;
+            Assert.False(mapPoint.IsValid);
+            mapPoint.Latitude = 0;
+            mapPoint.Longitude = -300;
+            Assert.False(mapPoint.IsValid);
+            mapPoint.Longitude = 0;
+            mapPoint.Name = string.Empty;
+            Assert.False(mapPoint.IsValid);
+            mapPoint.Name = " ";
+            Assert.False(mapPoint.IsValid);
         }
 
         [Fact]

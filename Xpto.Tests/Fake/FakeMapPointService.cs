@@ -26,7 +26,7 @@ namespace Xpto.Tests.Fake
 
         public Task<ValidationResult> AddAsync(MapPoint entity)
         {
-             if (!_validationResult.IsValid)
+            if (!_validationResult.IsValid)
                 return Task.FromResult(_validationResult);
 
             var selfValidationEntity = entity as ISelfValidation;
@@ -44,7 +44,8 @@ namespace Xpto.Tests.Fake
 
         public Task DeleteByIdAsync(Guid mapPointId)
         {
-            throw new NotImplementedException();
+            _mapPoints.Remove(_mapPoints.SingleOrDefault(mp => mp.Id.Equals(mapPointId)));
+            return Task.CompletedTask;
         }
 
         public Task<IEnumerable<MapPoint>> FindAsync(Expression<Func<MapPoint, bool>> predicate)

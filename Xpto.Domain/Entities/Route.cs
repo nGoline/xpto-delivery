@@ -14,7 +14,6 @@ namespace Xpto.Domain.Entities
         public virtual MapPoint From { get; set; }
         public Guid ToId { get; set; }
         public virtual MapPoint To { get; set; }
-        public virtual List<MapPoint> Points { get; set; }
         public double Cost { get; set; }
 
         public ValidationResult ValidationResult { get; private set; }
