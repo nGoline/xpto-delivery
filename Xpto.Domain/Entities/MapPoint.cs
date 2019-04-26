@@ -10,48 +10,9 @@ namespace Xpto.Domain.Entities
 {
     public class MapPoint : Entity, ISelfValidation
     {
-        private string _name;
-        private double _latitude;
-        private double _longitude;
-
-        public string Name
-        {
-            get
-            {
-                return _name;
-            }
-            set
-            {
-                if (string.IsNullOrWhiteSpace(value))
-                    throw new NullReferenceException(nameof(Name));
-
-                _name = value;
-            }
-        }
-        public double Latitude
-        {
-            get
-            {
-                return _latitude;
-            }
-            set
-            {
-                _latitude = value;
-                Coordinate.Latitude = value;
-            }
-        }
-        public double Longitude
-        {
-            get
-            {
-                return _longitude;
-            }
-            set
-            {
-                _longitude = value;
-                Coordinate.Longitude = value;
-            }
-        }
+        public string Name {get;set;}
+        public double Latitude {get;set;}
+        public double Longitude {get;set;}
 
         public GeoCoordinate Coordinate { get; set; }
 

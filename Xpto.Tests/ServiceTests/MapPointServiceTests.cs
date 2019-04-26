@@ -10,6 +10,9 @@ using Xunit;
 using Xpto.Data.Repository.EntityFramework;
 using Xpto.Data.Context.Interfaces;
 using Xpto.Data.Context;
+using Moq;
+using Xpto.Domain.Interfaces.Repository;
+using System.Collections.Generic;
 
 namespace Xpto.Tests.ServiceTests
 {
@@ -27,15 +30,15 @@ namespace Xpto.Tests.ServiceTests
         [Fact, TestPriority(0)]
         public async Task DatabaseIsEmpty()
         {
-            using (var context = _contextFactory.CreateDbContext())
-            {
-                var mapRepository = new MapPointRepository(context);
-                var mapService = new MapPointService(mapRepository);
+            var mockRepo = new Mock<IMapPointRepository>();
+            mockRepo.Setup(repo => repo.GetAllAsync(true, null))
+                .ReturnsAsync(() => { return new List<MapPoint>(); });
 
-                var mapPoints = await mapService.GetAllAsync();
+            var mapService = new MapPointService(mockRepo.Object);
 
-                Assert.Empty(mapPoints);
-            }
+            var mapPoints = await mapService.GetAllAsync();
+
+            Assert.Empty(mapPoints);
         }
 
         [Fact, TestPriority(1)]

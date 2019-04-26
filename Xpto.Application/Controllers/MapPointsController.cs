@@ -51,19 +51,21 @@ namespace Xpto.Application.Controllers
         }
 
         [HttpPost]
-        public async Task<ActionResult<MapPointDTO>> Create(MapPointDTO mapPointDTO)
+        public async Task<ActionResult> Create(MapPointDTO mapPointDTO)
         {
-            mapPointDTO.Name = "a";
-            mapPointDTO.Latitude = 123;
-            mapPointDTO.Longitude = 12;
-            //var mapPoint = mapPointDTO.ToEntity();
-            //await _mapPointService.AddAsync(mapPoint);
+            var mapPoint = mapPointDTO.ToEntity();
 
-            return Ok(mapPointDTO);//new MapPointDTO(mapPoint));
+            if (!mapPoint.IsValid) {
+                return BadRequest(mapPoint.ValidationResult);
+            }
+
+            await _mapPointService.AddAsync(mapPoint);
+
+            return CreatedAtAction("Get", new { Id = mapPoint.Id }, new MapPointDTO(mapPoint));
         }
 
-        [HttpPost("{mapPointId}")]
-        public async Task<ActionResult<UserDTO>> UpdateUser(Guid mapPointId, MapPointDTO mapPointDTO)
+        [HttpPut("{mapPointId}")]
+        public async Task<ActionResult<UserDTO>> UpdateMapPoint(Guid mapPointId, MapPointDTO mapPointDTO)
         {
             if (mapPointId == null || mapPointId == Guid.Empty)
                 return StatusCode(500, $"{nameof(mapPointId)} can't be empty.");
