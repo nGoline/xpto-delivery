@@ -13,28 +13,24 @@ namespace Xpto.Tests.Fake
     public class FakeMapPointService : IMapPointService
     {
         private ValidationResult _validationResult;
-        private List<MapPoint> _mapPoints = new List<MapPoint>{
-            new MapPoint("Test 1", 10, -10){ Id = Guid.NewGuid() },
-            new MapPoint("Test 2", 11, -11){ Id = new Guid("ab2bd817-98cd-4cf3-a80a-53ea0cd9c200") },
-            new MapPoint("Test 3", 13, -13){ Id = Guid.NewGuid() }
-        };
+        private FakeMapPointRepository _fakeMapPointRepository = new FakeMapPointRepository();
 
         public FakeMapPointService()
         {
             _validationResult = new ValidationResult();
         }
 
-        public Task<ValidationResult> AddAsync(MapPoint entity)
-        {
+        public async Task<ValidationResult> AddAsync(MapPoint entity)
+        {            
             if (!_validationResult.IsValid)
-                return Task.FromResult(_validationResult);
+                return _validationResult;
 
             var selfValidationEntity = entity as ISelfValidation;
             if (selfValidationEntity != null && !selfValidationEntity.IsValid)
-                return Task.FromResult(selfValidationEntity.ValidationResult);
-
-            _mapPoints.Add(entity);
-            return Task.FromResult(_validationResult);
+                return selfValidationEntity.ValidationResult;
+            
+            await _fakeMapPointRepository.AddAsync(entity);
+            return _validationResult;
         }
 
         public Task<ValidationResult> DeleteAsync(MapPoint entity)
@@ -42,10 +38,9 @@ namespace Xpto.Tests.Fake
             throw new NotImplementedException();
         }
 
-        public Task DeleteByIdAsync(Guid mapPointId)
+        public async Task DeleteByIdAsync(Guid mapPointId)
         {
-            _mapPoints.Remove(_mapPoints.SingleOrDefault(mp => mp.Id.Equals(mapPointId)));
-            return Task.CompletedTask;
+            await _fakeMapPointRepository.DeleteByAsync(mp => mp.Id.Equals(mapPointId));
         }
 
         public Task<IEnumerable<MapPoint>> FindAsync(Expression<Func<MapPoint, bool>> predicate)
@@ -55,12 +50,12 @@ namespace Xpto.Tests.Fake
 
         public Task<IEnumerable<MapPoint>> GetAllAsync()
         {
-            return Task.FromResult((IEnumerable<MapPoint>)_mapPoints);
+            return _fakeMapPointRepository.GetAllAsync();
         }
 
         public Task<MapPoint> GetByIdAsync(Guid id)
         {
-            return Task.FromResult(_mapPoints.SingleOrDefault(mp => mp.Id.Equals(id)));
+            return _fakeMapPointRepository.GetByIdAsync(id);
         }
 
         public Task<ValidationResult> UpdateAsync(MapPoint department)

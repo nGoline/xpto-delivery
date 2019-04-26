@@ -8,8 +8,8 @@ namespace Xpto.Tests.EntityTests
 {
     public class RouteTests
     {
-        private static Guid _from = Guid.NewGuid();
-        private static Guid _to = Guid.NewGuid();
+        private static MapPoint _from = new MapPoint{Id = Guid.NewGuid(), Name="Test 1", Latitude = 34.12345678, Longitude = -12.12345678 };
+        private static MapPoint _to = new MapPoint{Id = Guid.NewGuid(), Name="Test 2", Latitude = 34.12302223, Longitude = -12.00004343 };
 
         [Fact]
         public void MustCreateNewBlankRoute()
@@ -23,11 +23,12 @@ namespace Xpto.Tests.EntityTests
         public void MustCreateNewRouteAndSetProps()
         {
             var route = new Route();
-            route.FromId = _from;
-            route.ToId = _to;
+            route.From = _from;
+            route.FromId = _from.Id;
+            route.To = _to;
 
-            Assert.Equal(_from, route.FromId);
-            Assert.Equal(_to, route.ToId);
+            Assert.Equal(_from, route.From);
+            Assert.Equal(_to, route.To);
         }
 
         [Fact]
@@ -35,8 +36,8 @@ namespace Xpto.Tests.EntityTests
         {
             var route = new Route(_from, _to);
 
-            Assert.Equal(_from, route.FromId);
-            Assert.Equal(_to, route.ToId);
+            Assert.Equal(_from.Id, route.FromId);
+            Assert.Equal(_to.Id, route.ToId);
         }
 
         [Fact]
@@ -45,8 +46,8 @@ namespace Xpto.Tests.EntityTests
             var route = new Route(_from, _to);
             var dto = new RouteDTO(route);
 
-            Assert.Equal(_from, dto.From);
-            Assert.Equal(_to, dto.To);
+            Assert.Equal(_from.Id, dto.From.Id);
+            Assert.Equal(_to.Id, dto.To.Id);
         }
 
         [Fact]
@@ -54,14 +55,14 @@ namespace Xpto.Tests.EntityTests
         {
             var dto = new RouteDTO
             {
-                From = _from,
-                To = _to
+                From = new MapPointDTO(_from),
+                To = new MapPointDTO(_to)
             };
 
             var route = dto.ToEntity();
 
-            Assert.Equal(_from, route.FromId);
-            Assert.Equal(_to, route.ToId);
+            Assert.Equal(_from.Id, route.FromId);
+            Assert.Equal(_to.Id, route.ToId);
         }
     }
 }

@@ -29,6 +29,15 @@ namespace Xpto.Domain.Entities
 
         public ValidationResult ValidationResult { get; private set; }
 
+        public User()
+        {        }
+        public User(string name, string email, string password)
+        {
+            Name = name;
+            Email = email;
+            Password = password;
+        }
+
         public bool IsValid
         {
             get

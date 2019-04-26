@@ -10,22 +10,33 @@ namespace Xpto.Domain.Entities
 {
     public class MapPoint : Entity, ISelfValidation
     {
-        public string Name {get;set;}
-        public double Latitude {get;set;}
-        public double Longitude {get;set;}
+        private GeoCoordinate _coordinate;
 
-        public GeoCoordinate Coordinate { get; set; }
+        public string Name { get; set; }
+        public double Latitude { get; set; }
+        public double Longitude { get; set; }
+
+        public GeoCoordinate Coordinate
+        {
+            get
+            {
+                if (_coordinate == null)
+                    _coordinate = new GeoCoordinate(Latitude, Longitude);
+
+                return _coordinate;
+            }
+            private set
+            {
+                _coordinate = value;
+            }
+        }
 
         public ValidationResult ValidationResult { get; private set; }
 
         public MapPoint()
-        {
-            Coordinate = new GeoCoordinate();
-        }
+        { }
         public MapPoint(string name, double latitude, double longitude)
         {
-            Coordinate = new GeoCoordinate();
-            
             Name = name;
             Latitude = latitude;
             Longitude = longitude;

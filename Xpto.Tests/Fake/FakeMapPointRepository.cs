@@ -10,15 +10,31 @@ namespace Xpto.Tests.Fake
 {
     public class FakeMapPointRepository : IMapPointRepository
     {
-        private List<MapPoint> _mapPoints = new List<MapPoint>{
-            new MapPoint("Test 1", 10, -10){ Id = Guid.NewGuid() },
-            new MapPoint("Test 2", 11, -11){ Id = new Guid("ab2bd817-98cd-4cf3-a80a-53ea0cd9c200") },
-            new MapPoint("Test 3", 13, -13){ Id = Guid.NewGuid() }
-        };
+        private static Random _rnd = new Random(123);
+        private Dictionary<Guid, MapPoint> _mapPoints = new Dictionary<Guid, MapPoint>();
+
+        public MapPoint GetNewMapPoint(Guid? id = null)
+        {
+            if (id == null)
+                id = Guid.NewGuid();
+
+            var mapPoint = new MapPoint
+            {
+                Id = id.Value,
+                Name = $"Test {id.ToString()}",
+                Latitude = ((_rnd.Next(1) == 1 ? 1 : -1) * _rnd.NextDouble() * 89) + 1,
+                Longitude = ((_rnd.Next(1) == 1 ? 1 : -1) * _rnd.NextDouble() * 179) + 1
+            };
+
+            _mapPoints.Add(mapPoint.Id, mapPoint);
+
+            return mapPoint;
+        }
 
         public Task AddAsync(MapPoint entity)
         {
-            _mapPoints.Add(entity);
+            entity.Id = Guid.NewGuid();
+            _mapPoints.Add(entity.Id, entity);
             return Task.CompletedTask;
         }
 
@@ -29,8 +45,9 @@ namespace Xpto.Tests.Fake
 
         public Task DeleteByAsync(Func<MapPoint, bool> where)
         {
-            foreach(var mapPoint in _mapPoints.Where(where))
-                _mapPoints.Remove(mapPoint);
+            var toDelete = _mapPoints.Values.Where(where).ToList();
+            foreach (var mapPoint in toDelete)
+                _mapPoints.Remove(mapPoint.Id);
 
             return Task.CompletedTask;
         }
@@ -42,12 +59,12 @@ namespace Xpto.Tests.Fake
 
         public Task<IEnumerable<MapPoint>> GetAllAsync(bool asNoTracking = true, Expression<Func<MapPoint, object>> include = null)
         {
-            return Task.FromResult((IEnumerable<MapPoint>)_mapPoints);
+            return Task.FromResult((IEnumerable<MapPoint>)_mapPoints.Values);
         }
 
         public Task<MapPoint> GetByIdAsync(Guid id, bool asNoTracking = true, Expression<Func<MapPoint, object>> include = null)
         {
-            return Task.FromResult(_mapPoints.SingleOrDefault(mp=>mp.Id.Equals(id)));
+            return Task.FromResult(_mapPoints.ContainsKey(id) ? _mapPoints[id] : null);
         }
 
         public Task UpdateAsync(MapPoint entity)

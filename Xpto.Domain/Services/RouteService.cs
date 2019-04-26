@@ -7,6 +7,7 @@ using Xpto.Domain.Interfaces.Repository;
 using Xpto.Domain.Interfaces.Service;
 using Xpto.Domain.Services.Common;
 using System.Collections.Generic;
+using Xpto.Domain.Validation;
 
 namespace Xpto.Domain.Services
 {
@@ -15,6 +16,16 @@ namespace Xpto.Domain.Services
         public RouteService(IRouteRepository repository)
             : base(repository)
         { }
+
+        public override async Task<ValidationResult> AddAsync(Route route)
+        {
+            await base.AddAsync(route);
+
+            var routeFull = await Repository.GetByIdAsync(route.Id, true, r => new { r.From, r.To });
+            route.Cost = routeFull.From.Coordinate.GetDistanceTo(routeFull.To.Coordinate);
+
+            return await base.UpdateAsync(routeFull);
+        }
 
         public async Task RemoveByIdAsync(Guid routeId)
         {

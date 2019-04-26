@@ -80,5 +80,19 @@ namespace Xpto.Application.Controllers
 
             return Ok(new MapPointDTO(mapPoint));
         }
+
+        [HttpDelete("{mapPointId}")]
+        public async Task<ActionResult> DeleteMapPoint(Guid mapPointId)
+        {
+            if (mapPointId == null || mapPointId == Guid.Empty)
+                return StatusCode(400, $"{nameof(mapPointId)} can't be empty.");
+
+            var mapPoint = await _mapPointService.GetByIdAsync(mapPointId);
+            if (mapPoint != null)
+                return NotFound("MapPoint not found.");
+
+            await _mapPointService.DeleteAsync(mapPoint);
+            return Ok();
+        }
     }
 }

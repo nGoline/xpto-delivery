@@ -1,4 +1,5 @@
 using Microsoft.EntityFrameworkCore;
+using Xpto.Data.Context;
 using Xpto.Data.Context.Interfaces;
 using Xpto.Data.Repository.EntityFramework.Common;
 using Xpto.Domain.Entities;
@@ -8,8 +9,8 @@ namespace Xpto.Data.Repository.EntityFramework
 {
     public class UserRepository : Repository<User>, IUserRepository
     {
-        public UserRepository(DbContext contextManager)
-            : base(contextManager)
+        public UserRepository(XptoContext context)
+            : base(context)
         {
         }
     }

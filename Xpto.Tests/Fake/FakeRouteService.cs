@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq.Expressions;
 using System.Threading.Tasks;
 using Xpto.Domain.Entities;
+using Xpto.Domain.Interfaces.Repository;
 using Xpto.Domain.Interfaces.Service;
 using Xpto.Domain.Interfaces.Validation;
 using Xpto.Domain.Validation;
@@ -12,21 +13,28 @@ namespace Xpto.Tests.Fake
     public class FakeRouteService : IRouteService
     {
         private ValidationResult _validationResult;
-        private List<Route> _routes = new List<Route>();
-        public Task<ValidationResult> AddAsync(Route entity)
+        private FakeRouteRepository _fakeRouteRepository;
+
+        public FakeRouteService(IMapPointRepository _fakeMapPointRepository = null)
+        {
+            _fakeRouteRepository = new FakeRouteRepository(_fakeMapPointRepository);
+        }
+
+        public async Task<ValidationResult> AddAsync(Route entity)
         {
             if (!_validationResult.IsValid)
-                return Task.FromResult(_validationResult);
+                return _validationResult;
 
             var selfValidationEntity = entity as ISelfValidation;
             if (selfValidationEntity != null && !selfValidationEntity.IsValid)
-                return Task.FromResult(selfValidationEntity.ValidationResult);
+                return selfValidationEntity.ValidationResult;
 
-            _routes.Add(entity);
-            return Task.FromResult(_validationResult);
+            await _fakeRouteRepository.AddAsync(entity);
+
+            return _validationResult;
         }
 
-        public Task CreateRoutesUsingNewPoint(IEnumerable<MapPoint> mapPoints, MapPoint newMapPoint)
+        public async Task CreateRoutesUsingNewPoint(IEnumerable<MapPoint> mapPoints, MapPoint newMapPoint)
         {
             foreach (var mapPoint in mapPoints)
             {
@@ -35,10 +43,8 @@ namespace Xpto.Tests.Fake
                     Cost = mapPoint.Coordinate.GetDistanceTo(newMapPoint.Coordinate)
                 };
 
-                _routes.Add(route);
+                await _fakeRouteRepository.AddAsync(route);
             }
-
-            return Task.CompletedTask;
         }
 
         public Task<ValidationResult> DeleteAsync(Route entity)

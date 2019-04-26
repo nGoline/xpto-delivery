@@ -31,6 +31,9 @@ using Xpto.Data.Context.Config;
 using Xpto.Data.Repository.EntityFramework;
 using Xpto.Domain.Interfaces.Repository;
 using Xpto.Domain.Interfaces.Service;
+using Swashbuckle.AspNetCore.Swagger;
+using System.Reflection;
+using System.IO;
 
 namespace Xpto.Application
 {
@@ -49,13 +52,13 @@ namespace Xpto.Application
             // Using in memory database for testing purpose
             services.AddDbContext<XptoContext>(opts => opts.UseInMemoryDatabase("MainDatabase"));
 
-            services.AddScoped<IMapPointService>();
-            services.AddScoped<IRouteService>();
-            services.AddScoped<IUserService>();
+            services.AddScoped<IMapPointService, MapPointService>();
+            services.AddScoped<IRouteService, RouteService>();
+            services.AddScoped<IUserService, UserService>();
 
-            services.AddScoped<IMapPointRepository>();
-            services.AddScoped<IRouteRepository>();
-            services.AddScoped<IUserRepository>();
+            services.AddScoped<IMapPointRepository, MapPointRepository>();
+            services.AddScoped<IRouteRepository, RouteRepository>();
+            services.AddScoped<IUserRepository, UserRepository>();
 
             services.AddMvc().ConfigureApiBehaviorOptions(o =>
             {
@@ -94,6 +97,33 @@ namespace Xpto.Application
                     };
                 }
             );
+
+            // Register the Swagger generator, defining 1 or more Swagger documents
+            services.AddSwaggerGen(c =>
+            {
+                c.SwaggerDoc("v1", new Info
+                {
+                    Version = "v1",
+                    Title = "Xpto API",
+                    Description = "Xpto Delivery Web API",
+                    Contact = new Contact
+                    {
+                        Name = "Níckolas Goline",
+                        Email = string.Empty,
+                        Url = "https://linkedin.com/in/ngoline"
+                    },
+                    License = new License
+                    {
+                        Name = "Use under MIT",
+                        Url = "https://choosealicense.com/licenses/mit/"
+                    }
+                });
+
+                // Set the comments path for the Swagger JSON and UI.
+                var xmlFile = $"{Assembly.GetExecutingAssembly().GetName().Name}.xml";
+                var xmlPath = Path.Combine(AppContext.BaseDirectory, xmlFile);
+                c.IncludeXmlComments(xmlPath);
+            });
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
@@ -111,6 +141,16 @@ namespace Xpto.Application
                 .AllowAnyHeader());
 
             app.UseAuthentication();
+
+            // Enable middleware to serve generated Swagger as a JSON endpoint.
+            app.UseSwagger();
+
+            // Enable middleware to serve swagger-ui (HTML, JS, CSS, etc.), 
+            // specifying the Swagger JSON endpoint.
+            app.UseSwaggerUI(c =>
+            {
+                c.SwaggerEndpoint("/swagger/v1/swagger.json", "Xpto API V1");
+            });
 
             app.UseMvc();
         }

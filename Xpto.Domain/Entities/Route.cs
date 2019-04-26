@@ -25,6 +25,13 @@ namespace Xpto.Domain.Entities
             FromId = fromId;
             ToId = toId;
         }
+        public Route(MapPoint from, MapPoint to)
+        {
+            FromId = from.Id;
+            From = from;
+            ToId = to.Id;
+            To = to;
+        }
 
         public bool IsValid
         {

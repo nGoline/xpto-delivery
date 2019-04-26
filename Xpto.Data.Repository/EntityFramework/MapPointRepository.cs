@@ -1,4 +1,5 @@
 using Microsoft.EntityFrameworkCore;
+using Xpto.Data.Context;
 using Xpto.Data.Context.Interfaces;
 using Xpto.Data.Repository.EntityFramework.Common;
 using Xpto.Domain.Entities;
@@ -8,8 +9,8 @@ namespace Xpto.Data.Repository.EntityFramework
 {
     public class MapPointRepository : Repository<MapPoint>, IMapPointRepository
     {
-        public MapPointRepository(DbContext contextManager)
-            : base(contextManager)
+        public MapPointRepository(XptoContext context)
+            : base(context)
         {
         }
     }

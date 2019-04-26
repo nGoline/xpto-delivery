@@ -14,10 +14,10 @@ namespace Xpto.Data.Repository.EntityFramework.Common
     public class Repository<TEntity> : IRepository<TEntity>, IDisposable
         where TEntity : Entity
     {
-        private readonly DbContext _dbContext;
+        private readonly XptoContext _dbContext;
         private readonly DbSet<TEntity> _dbSet;
 
-        public Repository(DbContext context)
+        public Repository(XptoContext context)
         {
             _dbContext = context;
             _dbSet = _dbContext.Set<TEntity>();

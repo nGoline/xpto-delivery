@@ -1,3 +1,4 @@
+using System.Diagnostics;
 using System;
 using System.Linq;
 using System.Threading.Tasks;
@@ -21,15 +22,17 @@ namespace Xpto.Tests.ServiceTests
     [TestCaseOrderer("Xpto.Tests.Common.PriorityOrderer", "Xpto.Tests")]
     public class MapPointServiceTests
     {
-        private IMapPointRepository _repository;
-        private IMapPointService _service;
-        private Guid _mapPointId;
+        private static IMapPointRepository _repository;
+        private static IMapPointService _service;
+        private static Guid _mapPointId;
 
         public MapPointServiceTests()
         {
-            _repository = new FakeMapPointRepository();
-            
-            _service = new MapPointService(_repository, new FakeRouteService());
+            if(_repository == null)
+                _repository = new FakeMapPointRepository();   
+
+            if(_service == null)         
+                _service = new MapPointService(_repository, new FakeRouteService(_repository));
         }
 
         [Fact, TestPriority(0)]
@@ -41,17 +44,20 @@ namespace Xpto.Tests.ServiceTests
 
             Assert.NotEqual(Guid.Empty, mapPoint.Id);
 
-            var fetchedMapPoint = await _repository.GetByIdAsync(mapPoint.Id);
+            _mapPointId = mapPoint.Id;
+
+            var fetchedMapPoint = await _service.GetByIdAsync(mapPoint.Id);
+            Assert.Equal(mapPoint.Id, fetchedMapPoint.Id);
             Assert.Equal(mapPoint.Name, fetchedMapPoint.Name);
             Assert.Equal(mapPoint.Latitude, fetchedMapPoint.Latitude);
             Assert.Equal(mapPoint.Longitude, fetchedMapPoint.Longitude);
-
-            _mapPointId = fetchedMapPoint.Id;
         }
 
         [Fact, TestPriority(1)]
         public async Task ShouldDeleteEntry()
         {
+            Assert.NotEmpty(await _service.GetAllAsync());
+            Debug.WriteLine((await _service.GetAllAsync()).FirstOrDefault().Id);
             await _service.DeleteByIdAsync(_mapPointId);
 
             var mapPoint = await _service.GetByIdAsync(_mapPointId);
