@@ -24,10 +24,10 @@ namespace Xpto.Application.Controllers
     /// </summary>
     [Route("api/[controller]"),
      ApiController,
-     Authorize]
+     Authorize,
+     Produces("application/json")]
     public class UsersController : Controller
     {
-        private bool _wasCreated = false;
         private IUserService _userService;
 
         public UsersController(IUserService userService)
@@ -43,7 +43,7 @@ namespace Xpto.Application.Controllers
         /// <remarks>
         /// Sample request:
         ///
-        ///     POST /api/Users/Authenticate
+        ///     GET /api/Users/Authenticate
         ///     {
         ///        "email": "mike@xpto.com",
         ///        "password": "123456"
@@ -55,7 +55,10 @@ namespace Xpto.Application.Controllers
         /// <response code="400">Client sent a bad request</response>
         /// <response code="404">If the combination of <c>email</c> and <c>password</c> didn't return a valid User</response>       
         [HttpGet("authenticate"),
-         AllowAnonymous]
+         AllowAnonymous,
+         ProducesResponseType(201),
+         ProducesResponseType(400),
+         ProducesResponseType(404)]
         public async Task<ActionResult<UserDTO>> Authenticate(string email, string password)
         {
             var user = new User("login", email, password);
@@ -90,7 +93,20 @@ namespace Xpto.Application.Controllers
         /// Fetch all Users
         /// </summary>
         /// <returns>A list of all Users</returns>
-        [HttpGet]
+        /// <remarks>
+        /// Sample request:
+        ///
+        ///     GET /api/Users/
+        ///
+        /// </remarks>
+        /// <returns>List of Users</returns>
+        /// <response code="200">Returns the User List</response>
+        /// <response code="401">User unauthorized</response>
+        /// <response code="204">The database is empty</response>
+        [HttpGet,
+         ProducesResponseType(200),
+         ProducesResponseType(401),
+         ProducesResponseType(204)]
         public async Task<ActionResult<List<UserDTO>>> ListUsers()
         {
             var users = await _userService.GetAllAsync();
@@ -111,8 +127,20 @@ namespace Xpto.Application.Controllers
         /// Find a specific User by its Id
         /// </summary>
         /// <param name="userId">User Id to be found</param>
+        /// <remarks>
+        /// Sample request:
+        ///
+        ///     GET /api/Users/00000000-0000-0000-0000-000000000000
+        ///
+        /// </remarks>
         /// <returns>User Object</returns>
-        [HttpGet("{userId}")]
+        /// <response code="200">Returns the User</response>
+        /// <response code="401">User unauthorized</response>
+        /// <response code="404">User not found</response>
+        [HttpGet("{userId}"),
+         ProducesResponseType(204),
+         ProducesResponseType(401),
+         ProducesResponseType(404)]
         public async Task<ActionResult<UserDTO>> FindUser(Guid userId)
         {
             var user = await _userService.GetByIdAsync(userId);
@@ -127,8 +155,25 @@ namespace Xpto.Application.Controllers
         /// Creates a new User
         /// </summary>
         /// <param name="userDTO">User Object to be created</param>
+        /// <remarks>
+        /// Sample request:
+        ///
+        ///     POST /api/Users/
+        ///     {
+        ///       "name": "Mike",
+        ///       "email": "mike@xpto.com",
+        ///       "password": "123456"
+        ///     }
+        ///
+        /// </remarks>
         /// <returns>Created User Object</returns>
-        [HttpPost]
+        /// <response code="200">Returns the created User</response>
+        /// <response code="401">User unauthorized</response>
+        /// <response code="500">Error creating User</response>
+        [HttpPost,
+         ProducesResponseType(200),
+         ProducesResponseType(401),
+         ProducesResponseType(500)]
         public async Task<ActionResult<UserDTO>> CreateUser(UserDTO userDTO)
         {
             var user = userDTO.ToEntity();
@@ -141,8 +186,20 @@ namespace Xpto.Application.Controllers
         /// Updates an existing User
         /// </summary>
         /// <param name="userDTO">User Object to be updated</param>
+        /// <remarks>
+        /// Sample request:
+        ///
+        ///     PUT /api/Users/
+        ///
+        /// </remarks>
         /// <returns>Updated User Object</returns>
-        [HttpPut]
+        /// <response code="200">Returns the updated User</response>
+        /// <response code="401">User unauthorized</response>
+        /// <response code="500">Error updating User</response>
+        [HttpPut,
+         ProducesResponseType(200),
+         ProducesResponseType(401),
+         ProducesResponseType(500)]
         public async Task<ActionResult<UserDTO>> UpdateUser(UserDTO userDTO)
         {
             if (userDTO.Id == null || userDTO.Id == Guid.Empty)
