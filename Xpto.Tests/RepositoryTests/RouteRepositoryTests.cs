@@ -47,20 +47,6 @@ namespace Xpto.Tests.RepositoryTests
         }
 
         [Fact, TestPriority(0)]
-        public async Task DatabaseIsEmpty()
-        {
-            using (var context = _contextFactory.CreateDbContext())
-            {
-                var routeRepository = new RouteRepository(context);
-                var map = new MapPointRepository(context);
-
-                var mapPoints = await routeRepository.GetAllAsync();
-
-                Assert.Empty(mapPoints);
-            }
-        }
-
-        [Fact, TestPriority(1)]
         public async Task ShouldCreateEntry()
         {
             var route = new Route(_mapPoint1Id, _mapPoint2Id, 10, 10);
@@ -86,7 +72,7 @@ namespace Xpto.Tests.RepositoryTests
             }
         }
 
-        [Fact, TestPriority(2)]
+        [Fact, TestPriority(1)]
         public async Task ShouldDeleteEntry()
         {
             using (var context = _contextFactory.CreateDbContext())
