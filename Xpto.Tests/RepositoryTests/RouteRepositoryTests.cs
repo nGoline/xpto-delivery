@@ -63,7 +63,7 @@ namespace Xpto.Tests.RepositoryTests
         [Fact, TestPriority(1)]
         public async Task ShouldCreateEntry()
         {
-            var route = new Route(_mapPoint1Id, _mapPoint2Id);
+            var route = new Route(_mapPoint1Id, _mapPoint2Id, 10, 10);
             using (var context = _contextFactory.CreateDbContext())
             {
                 var routeRepository = new RouteRepository(context);

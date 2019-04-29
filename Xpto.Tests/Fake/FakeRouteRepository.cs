@@ -65,6 +65,48 @@ namespace Xpto.Tests.Fake
             throw new NotImplementedException();
         }
 
+        public Task<List<Guid>> FindBestRouteAsync(Guid mapPoint1Id, Guid mapPoint2Id)
+        {
+            var initial = _routes.Values
+                // Get all mapPoints that has the first id but not the second id
+                .Where(r => (r.ToId.Equals(mapPoint1Id) || r.FromId.Equals(mapPoint1Id))
+                         && (r.FromId != mapPoint2Id || r.FromId != mapPoint2Id))
+                .Select(r => new
+                {
+                    FullPath = r.ToId.Equals(mapPoint1Id)
+                        ? new List<Guid> { r.FromId, r.ToId }
+                        : new List<Guid> { r.ToId, r.FromId },
+                    Cost = r.Cost,
+                    Time = r.Time
+                }).ToList();
+
+            var visited = initial.SelectMany(r => r.FullPath).ToList();
+
+            for (int i = 0; i < initial.Count(); i++)
+            {
+                var nextEl = initial.ElementAt(i);
+                var iteration = _routes.Values
+                    .Where(r => !visited.Contains(r.Id) && (r.ToId.Equals(nextEl.FullPath.Last()) || r.FromId.Equals(nextEl.FullPath.Last())))
+                    .Select(r => new
+                    {
+                        FullPath = nextEl.FullPath.Append(r.ToId.Equals(mapPoint1Id)
+                            ? r.ToId
+                            : r.FromId).ToList(),
+                        Cost = nextEl.Cost + r.Cost,
+                        Time = nextEl.Time + r.Time
+                    }).ToList();
+
+                initial.AddRange(iteration);
+
+                visited.AddRange(iteration.Select(r => r.FullPath.Last()));
+            }
+
+            return Task.FromResult(initial.OrderBy(r => r.Time)
+                .FirstOrDefault(r => r.FullPath.First().Equals(mapPoint1Id)
+                                  && r.FullPath.Last().Equals(mapPoint2Id))
+                .FullPath);
+        }
+
         public async Task<IEnumerable<Route>> GetAllAsync(bool asNoTracking = true, Expression<Func<Route, object>> include = null)
         {
             var routes = new List<Route>();

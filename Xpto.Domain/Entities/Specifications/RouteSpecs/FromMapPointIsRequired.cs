@@ -2,7 +2,7 @@ using System;
 using System.Security.AccessControl;
 using Xpto.Domain.Interfaces.Specification;
 
-namespace Xpto.Domain.Entities.Specifications
+namespace Xpto.Domain.Entities.Specifications.RouteSpecs
 {
     public class FromMapPointIsRequiredSpec : ISpecification<Route>
     {

@@ -1,4 +1,4 @@
-using Xpto.Domain.Entities.Specifications;
+using Xpto.Domain.Entities.Specifications.UserSpecs;
 using Xpto.Domain.Validation;
 
 namespace Xpto.Domain.Entities.Validations

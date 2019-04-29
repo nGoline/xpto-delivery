@@ -32,7 +32,7 @@ namespace Xpto.Tests.ServiceTests
                 _repository = new FakeMapPointRepository();   
 
             if(_service == null)         
-                _service = new MapPointService(_repository, new FakeRouteService(_repository));
+                _service = new MapPointService(_repository);
         }
 
         [Fact, TestPriority(0)]

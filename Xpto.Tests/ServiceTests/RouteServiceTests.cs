@@ -21,15 +21,19 @@ namespace Xpto.Tests.ServiceTests
     {
         private static IRouteRepository _repository;
         private static IRouteService _service;
+        private static IMapPointService _mapPointService;
         private static Guid _routeId;
 
         public RouteServiceTests()
         {
             if (_repository == null)
                 _repository = new FakeRouteRepository();
+            
+            if (_mapPointService == null)
+                _mapPointService = new FakeMapPointService();
 
             if (_service == null)
-                _service = new RouteService(_repository);
+                _service = new RouteService(_repository, _mapPointService);
         }
 
         [Fact, TestPriority(0)]
@@ -43,7 +47,7 @@ namespace Xpto.Tests.ServiceTests
         [Fact, TestPriority(1)]
         public async Task ShouldCreateEntry()
         {
-            var route = new Route(Guid.NewGuid(), Guid.NewGuid());
+            var route = new Route(Guid.NewGuid(), Guid.NewGuid(), 10, 10);
             await _service.AddAsync(route);
 
             Assert.NotEqual(Guid.Empty, route.Id);
@@ -58,7 +62,7 @@ namespace Xpto.Tests.ServiceTests
         [Fact, TestPriority(2)]
         public async Task ShouldDeleteEntry()
         {
-            await _service.RemoveByIdAsync(_routeId);
+            await _service.DeleteByIdAsync(_routeId);
             var route = await _service.GetByIdAsync(_routeId);
 
             Assert.Null(route);

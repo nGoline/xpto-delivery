@@ -12,7 +12,7 @@ namespace Xpto.Data.Context
     public class ContextFactory<TContext> : IContextFactory<TContext>
         where TContext : DbContext
     {
-        private DbConnection _connection;
+        private static DbConnection _connection;
 
         private DbContextOptions<XptoContext> CreateOptions()
         {

@@ -1,7 +1,7 @@
 using System.ComponentModel.DataAnnotations;
 using Xpto.Domain.Interfaces.Specification;
 
-namespace Xpto.Domain.Entities.Specifications
+namespace Xpto.Domain.Entities.Specifications.UserSpecs
 {
     public class UserEmailMustBeValidSpec : ISpecification<User>
     {

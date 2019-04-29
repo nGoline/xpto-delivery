@@ -1,3 +1,4 @@
+using System.Linq;
 using System;
 using System.Collections.Generic;
 using System.Linq.Expressions;
@@ -14,10 +15,12 @@ namespace Xpto.Tests.Fake
     {
         private ValidationResult _validationResult;
         private FakeRouteRepository _fakeRouteRepository;
+        private IMapPointRepository _fakeMapPointRepository;
 
-        public FakeRouteService(IMapPointRepository _fakeMapPointRepository = null)
+        public FakeRouteService(IMapPointRepository fakeMapPointRepository = null)
         {
-            _fakeRouteRepository = new FakeRouteRepository(_fakeMapPointRepository);
+            _fakeRouteRepository = new FakeRouteRepository(fakeMapPointRepository);
+            _fakeMapPointRepository = fakeMapPointRepository;
         }
 
         public async Task<ValidationResult> AddAsync(Route entity)
@@ -34,19 +37,6 @@ namespace Xpto.Tests.Fake
             return _validationResult;
         }
 
-        public async Task CreateRoutesUsingNewPoint(IEnumerable<MapPoint> mapPoints, MapPoint newMapPoint)
-        {
-            foreach (var mapPoint in mapPoints)
-            {
-                var route = new Route(mapPoint.Id, newMapPoint.Id)
-                {
-                    Cost = mapPoint.Coordinate.GetDistanceTo(newMapPoint.Coordinate)
-                };
-
-                await _fakeRouteRepository.AddAsync(route);
-            }
-        }
-
         public Task<ValidationResult> DeleteAsync(Route entity)
         {
             throw new NotImplementedException();
@@ -55,6 +45,14 @@ namespace Xpto.Tests.Fake
         public Task<IEnumerable<Route>> FindAsync(Expression<Func<Route, bool>> predicate)
         {
             throw new NotImplementedException();
+        }
+
+        public async Task<List<MapPoint>> FindBestRouteAsync(Guid mapPoint1Id, Guid mapPoint2Id)
+        {
+            var mapPointIdList = await _fakeRouteRepository.FindBestRouteAsync(mapPoint1Id, mapPoint2Id);
+            var mapPointList = await _fakeMapPointRepository.FindAsync(x=>mapPointIdList.Contains(x.Id));
+
+            return mapPointList.ToList();
         }
 
         public Task<IEnumerable<Route>> GetAllAsync()
@@ -67,14 +65,14 @@ namespace Xpto.Tests.Fake
             throw new NotImplementedException();
         }
 
-        public Task RemoveByIdAsync(Guid routeId)
+        public Task<ValidationResult> UpdateAsync(Route entity)
         {
             throw new NotImplementedException();
         }
 
-        public Task<ValidationResult> UpdateAsync(Route entity)
+        public async Task DeleteByIdAsync(Guid routeId)
         {
-            throw new NotImplementedException();
+            await _fakeRouteRepository.DeleteByAsync(mp => mp.Id.Equals(routeId));
         }
     }
 }

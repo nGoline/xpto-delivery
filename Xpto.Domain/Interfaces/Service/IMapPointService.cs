@@ -7,6 +7,5 @@ namespace Xpto.Domain.Interfaces.Service
 {
     public interface IMapPointService : IService<MapPoint>
     {
-         Task DeleteByIdAsync(Guid mapPointId);
     }
 }

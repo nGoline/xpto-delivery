@@ -6,11 +6,12 @@ using Xpto.Domain.Interfaces.Service.Common;
 using Xpto.Domain.Validation;
 using Xpto.Domain.Interfaces.Validation;
 using System.Threading.Tasks;
+using Xpto.Domain.Entities.Common;
 
 namespace Xpto.Domain.Services.Common
 {
     public class Service<TEntity> : IService<TEntity>
-        where TEntity : class
+        where TEntity : Entity
     {
         #region Constructor
         private readonly IRepository<TEntity> _repository;
@@ -88,6 +89,11 @@ namespace Xpto.Domain.Services.Common
 
             await _repository.DeleteAsync(entity);
             return _validationResult;
+        }        
+
+        public async Task DeleteByIdAsync(Guid id)
+        {
+            await Repository.DeleteByAsync(e => e.Id.Equals(id));
         }
         #endregion
     }

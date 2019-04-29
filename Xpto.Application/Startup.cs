@@ -1,39 +1,42 @@
-﻿using System.Net;
-using System;
+﻿using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
+using System.Net;
 using System.Net.Http;
 using System.Net.Http.Headers;
+using System.Reflection;
 using System.Security.Claims;
+using System.Text;
 using System.Threading.Tasks;
+
 using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Authentication.Cookies;
+using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Authentication.OAuth;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.Identity;
+using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.InMemory;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
-using Newtonsoft.Json.Linq;
-using Microsoft.AspNetCore.Identity;
-using Microsoft.AspNetCore.Mvc;
-using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.IdentityModel.Tokens;
-using System.Text;
-using Microsoft.AspNetCore.Authorization;
+
+using Newtonsoft.Json.Linq;
+
+using Swashbuckle.AspNetCore.Swagger;
+
 using Xpto.Data.Context;
-using Xpto.Domain.Services;
-using Xpto.Data.Context.Config;
 using Xpto.Data.Repository.EntityFramework;
 using Xpto.Domain.Interfaces.Repository;
 using Xpto.Domain.Interfaces.Service;
-using Swashbuckle.AspNetCore.Swagger;
-using System.Reflection;
-using System.IO;
+using Xpto.Domain.Services;
 
 namespace Xpto.Application
 {
@@ -64,18 +67,14 @@ namespace Xpto.Application
             {
                 o.InvalidModelStateResponseFactory = context =>
                 {
-                    var error = new
-                    {
-                        Detail = "Custom error"
+                var error = new
+                {
+                Detail = "Custom error"
                     };
 
                     return new BadRequestObjectResult(error);
                 };
             });
-
-            // services.AddIdentity<ApplicationUser, IdentityRole>()
-            //     .AddEntityFrameworkStores<ApplicationDbContext>()
-            //     .AddDefaultTokenProviders();
 
             // configure jwt authentication
             var key = Encoding.ASCII.GetBytes("_appSettings.Secret");
@@ -104,25 +103,38 @@ namespace Xpto.Application
                 c.SwaggerDoc("v1", new Info
                 {
                     Version = "v1",
-                    Title = "Xpto API",
-                    Description = "Xpto Delivery Web API",
-                    Contact = new Contact
-                    {
-                        Name = "Níckolas Goline",
-                        Email = string.Empty,
-                        Url = "https://linkedin.com/in/ngoline"
-                    },
-                    License = new License
-                    {
-                        Name = "Use under MIT",
-                        Url = "https://choosealicense.com/licenses/mit/"
-                    }
+                        Title = "Xpto API",
+                        Description = "Xpto Delivery Web API",
+                        Contact = new Contact
+                        {
+                            Name = "Níckolas Goline",
+                                Email = string.Empty,
+                                Url = "https://linkedin.com/in/ngoline"
+                        },
+                        License = new License
+                        {
+                            Name = "Use under MIT",
+                                Url = "https://choosealicense.com/licenses/mit/"
+                        }
                 });
 
                 // Set the comments path for the Swagger JSON and UI.
                 var xmlFile = $"{Assembly.GetExecutingAssembly().GetName().Name}.xml";
                 var xmlPath = Path.Combine(AppContext.BaseDirectory, xmlFile);
                 c.IncludeXmlComments(xmlPath);
+
+                // Swagger 2.+ support
+                var security = new Dictionary<string, IEnumerable<string>>
+                    { { "Bearer", new string[] { } },
+                    };
+                c.AddSecurityDefinition("Bearer", new ApiKeyScheme
+                {
+                    Description = "JWT Authorization header using the Bearer scheme. Example: \"Authorization: Bearer {token}\"",
+                        Name = "Authorization",
+                        In = "header",
+                        Type = "apiKey"
+                });
+                c.AddSecurityRequirement(security);
             });
         }
 

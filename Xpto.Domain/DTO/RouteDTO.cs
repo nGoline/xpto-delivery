@@ -9,8 +9,8 @@ namespace Xpto.Domain.DTO
         public Guid Id { get; set; }
         public MapPointDTO From { get; set; }
         public MapPointDTO To { get; set; }
-
         public double Cost { get; set; }
+        public double Time { get; set; }
 
         public RouteDTO()
         { }
@@ -20,6 +20,7 @@ namespace Xpto.Domain.DTO
             From = new MapPointDTO { Id = entity.FromId, Latitude = entity.From.Latitude, Longitude = entity.From.Longitude };
             To = new MapPointDTO { Id = entity.ToId, Latitude = entity.To.Latitude, Longitude = entity.To.Longitude };
             Cost = entity.Cost;
+            Time = entity.Time;
         }
 
         public Route ToEntity()
@@ -31,7 +32,8 @@ namespace Xpto.Domain.DTO
                 From = From.ToEntity(),
                 ToId = To.Id,
                 To = To.ToEntity(),
-                Cost = Cost
+                Cost = Cost,
+                Time = Time
             };
         }
     }

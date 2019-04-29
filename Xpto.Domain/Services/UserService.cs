@@ -18,6 +18,12 @@ namespace Xpto.Domain.Services
 
         public async Task<(User, ValidationResult)> AuthenticateAsync(User user)
         {
+            if (string.IsNullOrWhiteSpace(user.Password))
+            {
+                ValidationResult.Add("Password can't be null");
+                return (user, ValidationResult);
+            }
+
             if (!ValidationResult.IsValid)
                 return (user, ValidationResult);
 

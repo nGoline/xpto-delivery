@@ -11,16 +11,9 @@ namespace Xpto.Domain.Services
 {
     public class MapPointService : Service<MapPoint>, IMapPointService
     {
-        private IRouteService _routeService;
-        public MapPointService(IMapPointRepository repository, IRouteService routeService)
+        public MapPointService(IMapPointRepository repository)
             : base(repository)
         {
-            _routeService = routeService;
-        }
-
-        public async Task DeleteByIdAsync(Guid mapPointId)
-        {
-            await Repository.DeleteByAsync(mp => mp.Id.Equals(mapPointId));
         }
 
         public override async Task<ValidationResult> AddAsync(MapPoint entity)
@@ -35,8 +28,6 @@ namespace Xpto.Domain.Services
             var existingMapPoints = await Repository.GetAllAsync();
 
             await Repository.AddAsync(entity);
-
-            await _routeService.CreateRoutesUsingNewPoint(existingMapPoints, entity);
 
             return ValidationResult;
         }

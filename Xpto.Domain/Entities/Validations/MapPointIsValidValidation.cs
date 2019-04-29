@@ -1,4 +1,4 @@
-using Xpto.Domain.Entities.Specifications;
+using Xpto.Domain.Entities.Specifications.MapPointSpecs;
 using Xpto.Domain.Validation;
 
 namespace Xpto.Domain.Entities.Validations

@@ -26,28 +26,36 @@ namespace Xpto.Tests.EntityTests
             route.From = _from;
             route.FromId = _from.Id;
             route.To = _to;
+            route.Cost = 10;
+            route.Time = 10;
 
             Assert.Equal(_from, route.From);
             Assert.Equal(_to, route.To);
+            Assert.Equal(10, route.Cost);
+            Assert.Equal(10, route.Time);
         }
 
         [Fact]
         public void MustCreateNewRouteFromValues()
         {
-            var route = new Route(_from, _to);
+            var route = new Route(_from, _to, 10, 10);
 
             Assert.Equal(_from.Id, route.FromId);
             Assert.Equal(_to.Id, route.ToId);
+            Assert.Equal(10, route.Cost);
+            Assert.Equal(10, route.Time);
         }
 
         [Fact]
         public void MustCreateDto()
         {
-            var route = new Route(_from, _to);
+            var route = new Route(_from, _to, 10, 10);
             var dto = new RouteDTO(route);
 
             Assert.Equal(_from.Id, dto.From.Id);
             Assert.Equal(_to.Id, dto.To.Id);
+            Assert.Equal(10, dto.Cost);
+            Assert.Equal(10, dto.Time);
         }
 
         [Fact]

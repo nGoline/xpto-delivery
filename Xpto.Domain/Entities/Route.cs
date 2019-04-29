@@ -15,22 +15,27 @@ namespace Xpto.Domain.Entities
         public Guid ToId { get; set; }
         public virtual MapPoint To { get; set; }
         public double Cost { get; set; }
+        public double Time { get; set; }
 
         public ValidationResult ValidationResult { get; private set; }
 
         public Route()
         { }
-        public Route(Guid fromId, Guid toId)
+        public Route(Guid fromId, Guid toId, double time, double cost)
         {
             FromId = fromId;
             ToId = toId;
+            Cost = cost;
+            Time = time;
         }
-        public Route(MapPoint from, MapPoint to)
+        public Route(MapPoint from, MapPoint to, double time, double cost)
         {
             FromId = from.Id;
             From = from;
             ToId = to.Id;
             To = to;
+            Cost = cost;
+            Time = time;
         }
 
         public bool IsValid

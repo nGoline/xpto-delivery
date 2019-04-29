@@ -90,7 +90,7 @@ namespace Xpto.Tests.ControllerTests
         public async Task Add_InvalidObjectPassed_ReturnsBadRequest()
         {
             // Arrange
-            var nameMissingItem = new Route(Guid.NewGuid(), Guid.Empty);
+            var nameMissingItem = new Route(Guid.NewGuid(), Guid.Empty, 1, 1);
 
             // Act
             var badResponse = await _controller.Create(new RouteDTO(nameMissingItem));
@@ -104,7 +104,7 @@ namespace Xpto.Tests.ControllerTests
         public async Task Add_ValidObjectPassed_ReturnsCreatedResponse()
         {
             // Arrange
-            var testItem = new Route(Guid.NewGuid(), Guid.NewGuid());
+            var testItem = new Route(Guid.NewGuid(), Guid.NewGuid(), 1, 1);
 
             // Act
             var createdResponse = await _controller.Create(new RouteDTO(testItem));
@@ -120,7 +120,7 @@ namespace Xpto.Tests.ControllerTests
             // Arrange
             var mapPoint1 = new MapPoint("Test 1", 90, 118) { Id = Guid.NewGuid() };
             var mapPoint2 = new MapPoint("Test 1", 90.55883441, 117.99995994) { Id = Guid.NewGuid() };
-            var testItem = new Route(mapPoint1.Id, mapPoint2.Id) { From = mapPoint1, To = mapPoint2 };
+            var testItem = new Route(mapPoint1.Id, mapPoint2.Id, 1, 1) { From = mapPoint1, To = mapPoint2 };
 
             // Act
             var createdResponse = (await _controller.Create(new RouteDTO(testItem))) as CreatedAtActionResult;

@@ -15,5 +15,6 @@ namespace Xpto.Domain.Interfaces.Service.Common
         Task<ValidationResult> AddAsync(TEntity entity);
         Task<ValidationResult> UpdateAsync(TEntity entity);
         Task<ValidationResult> DeleteAsync(TEntity entity);
+        Task DeleteByIdAsync(Guid id);
     }
 }

@@ -25,7 +25,7 @@ namespace Xpto.Application.Controllers
         /// <returns>List of routes</returns>
         public async Task<ActionResult<List<RouteDTO>>> Get()
         {
-            var routes = await _routeService.GetAllAsync();
+            var routes = await _routeService.GetAllFullAsync();
             if (routes.Count() == 0)
                 return NoContent();
 

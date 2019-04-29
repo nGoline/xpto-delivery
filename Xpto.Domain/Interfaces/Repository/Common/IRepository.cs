@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq.Expressions;
 using System.Threading.Tasks;
+using Xpto.Domain.Entities;
 
 namespace Xpto.Domain.Interfaces.Repository.Common
 {

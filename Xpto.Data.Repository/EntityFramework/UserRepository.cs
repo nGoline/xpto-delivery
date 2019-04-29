@@ -12,6 +12,9 @@ namespace Xpto.Data.Repository.EntityFramework
         public UserRepository(XptoContext context)
             : base(context)
         {
+        #if DEBUG
+            context.Database.EnsureCreated();
+        #endif
         }
     }
 }

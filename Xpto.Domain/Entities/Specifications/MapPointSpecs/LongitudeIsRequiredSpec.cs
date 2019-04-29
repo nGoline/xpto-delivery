@@ -1,6 +1,6 @@
 using Xpto.Domain.Interfaces.Specification;
 
-namespace Xpto.Domain.Entities.Specifications
+namespace Xpto.Domain.Entities.Specifications.MapPointSpecs
 {
     public class LongitudeIsRequiredSpec : ISpecification<MapPoint>
     {
