@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Linq.Expressions;
 using System.Threading.Tasks;
+
 using Xpto.Domain.Entities;
 using Xpto.Domain.Interfaces.Repository;
 
@@ -30,7 +31,7 @@ namespace Xpto.Tests.Fake
             if ((await _fakeMapPointRepository.GetByIdAsync(entity.FromId)) == null)
             {
                 if (entity.From == null)
-                    entity.From = ((FakeMapPointRepository)_fakeMapPointRepository).GetNewMapPoint(entity.FromId);
+                    entity.From = ((FakeMapPointRepository) _fakeMapPointRepository).GetNewMapPoint(entity.FromId);
 
                 await _fakeMapPointRepository.AddAsync(entity.From);
             }
@@ -38,7 +39,7 @@ namespace Xpto.Tests.Fake
             if ((await _fakeMapPointRepository.GetByIdAsync(entity.ToId)) == null)
             {
                 if (entity.To == null)
-                    entity.To = ((FakeMapPointRepository)_fakeMapPointRepository).GetNewMapPoint(entity.ToId);
+                    entity.To = ((FakeMapPointRepository) _fakeMapPointRepository).GetNewMapPoint(entity.ToId);
 
                 await _fakeMapPointRepository.AddAsync(entity.To);
             }
@@ -69,15 +70,15 @@ namespace Xpto.Tests.Fake
         {
             var initial = _routes.Values
                 // Get all mapPoints that has the first id but not the second id
-                .Where(r => (r.ToId.Equals(mapPoint1Id) || r.FromId.Equals(mapPoint1Id))
-                         && (r.FromId != mapPoint2Id || r.FromId != mapPoint2Id))
+                .Where(r => (r.ToId.Equals(mapPoint1Id) || r.FromId.Equals(mapPoint1Id)) &&
+                    (r.FromId != mapPoint2Id || r.FromId != mapPoint2Id))
                 .Select(r => new
                 {
-                    FullPath = r.ToId.Equals(mapPoint1Id)
-                        ? new List<Guid> { r.FromId, r.ToId }
-                        : new List<Guid> { r.ToId, r.FromId },
-                    Cost = r.Cost,
-                    Time = r.Time
+                    FullPath = r.ToId.Equals(mapPoint1Id) ?
+                        new List<Guid> { r.FromId, r.ToId } :
+                        new List<Guid> { r.ToId, r.FromId },
+                        Cost = r.Cost,
+                        Time = r.Time
                 }).ToList();
 
             var visited = initial.SelectMany(r => r.FullPath).ToList();
@@ -89,11 +90,11 @@ namespace Xpto.Tests.Fake
                     .Where(r => !visited.Contains(r.Id) && (r.ToId.Equals(nextEl.FullPath.Last()) || r.FromId.Equals(nextEl.FullPath.Last())))
                     .Select(r => new
                     {
-                        FullPath = nextEl.FullPath.Append(r.ToId.Equals(mapPoint1Id)
-                            ? r.ToId
-                            : r.FromId).ToList(),
-                        Cost = nextEl.Cost + r.Cost,
-                        Time = nextEl.Time + r.Time
+                        FullPath = nextEl.FullPath.Append(r.ToId.Equals(mapPoint1Id) ?
+                                r.ToId :
+                                r.FromId).ToList(),
+                            Cost = nextEl.Cost + r.Cost,
+                            Time = nextEl.Time + r.Time
                     }).ToList();
 
                 initial.AddRange(iteration);
@@ -102,12 +103,19 @@ namespace Xpto.Tests.Fake
             }
 
             return Task.FromResult(initial.OrderBy(r => r.Time)
-                .FirstOrDefault(r => r.FullPath.First().Equals(mapPoint1Id)
-                                  && r.FullPath.Last().Equals(mapPoint2Id))
+                .FirstOrDefault(r => r.FullPath.First().Equals(mapPoint1Id) &&
+                    r.FullPath.Last().Equals(mapPoint2Id))
                 .FullPath);
         }
 
         public async Task<IEnumerable<Route>> GetAllAsync(bool asNoTracking = true, Expression<Func<Route, object>> include = null)
+        {
+            var routes = new List<Route>();
+
+            return routes;
+        }
+
+        public async Task<IEnumerable<Route>> GetAllFullAsync()
         {
             var routes = new List<Route>();
             foreach (var route in _routes.Values)
@@ -119,12 +127,7 @@ namespace Xpto.Tests.Fake
             return routes;
         }
 
-    public Task<IEnumerable<Route>> GetAllFullAsync()
-    {
-      throw new NotImplementedException();
-    }
-
-    public async Task<Route> GetByIdAsync(Guid id, bool asNoTracking = true, Expression<Func<Route, object>> include = null)
+        public async Task<Route> GetByIdAsync(Guid id, bool asNoTracking = true, Expression<Func<Route, object>> include = null)
         {
             if (!_routes.ContainsKey(id))
                 return null;

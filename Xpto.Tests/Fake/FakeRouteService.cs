@@ -76,9 +76,9 @@ namespace Xpto.Tests.Fake
             await _fakeRouteRepository.DeleteByAsync(mp => mp.Id.Equals(routeId));
         }
 
-        public Task<IEnumerable<Route>> GetAllFullAsync()
+        public async Task<IEnumerable<Route>> GetAllFullAsync()
         {
-            throw new NotImplementedException();
+            return await _fakeRouteRepository.GetAllFullAsync();
         }
     }
 }

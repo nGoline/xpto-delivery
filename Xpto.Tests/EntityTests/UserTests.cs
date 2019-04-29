@@ -48,12 +48,11 @@ namespace Xpto.Tests.EntityTests
         {
             Assert.False(new User(_name, "_email", _password).IsValid);
             Assert.False(new User("", _email, _password).IsValid);
-            Assert.False(new User(_name, _email, "").IsValid);
             var User = new User();
             User.Name = _name;
             Assert.False(User.IsValid);
             User.Email = _email;
-            Assert.False(User.IsValid);
+            Assert.True(User.IsValid);
             User.Password = _password;            
             User.Name = string.Empty;
             Assert.False(User.IsValid);
