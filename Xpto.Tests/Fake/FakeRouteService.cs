@@ -1,8 +1,9 @@
-using System.Linq;
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Linq.Expressions;
 using System.Threading.Tasks;
+
 using Xpto.Domain.Entities;
 using Xpto.Domain.Interfaces.Repository;
 using Xpto.Domain.Interfaces.Service;
@@ -50,7 +51,7 @@ namespace Xpto.Tests.Fake
         public async Task<List<MapPoint>> FindBestRouteAsync(Guid mapPoint1Id, Guid mapPoint2Id)
         {
             var mapPointIdList = await _fakeRouteRepository.FindBestRouteAsync(mapPoint1Id, mapPoint2Id);
-            var mapPointList = await _fakeMapPointRepository.FindAsync(x=>mapPointIdList.Contains(x.Id));
+            var mapPointList = await _fakeMapPointRepository.FindAsync(x => mapPointIdList.Contains(x.Id));
 
             return mapPointList.ToList();
         }
@@ -73,6 +74,11 @@ namespace Xpto.Tests.Fake
         public async Task DeleteByIdAsync(Guid routeId)
         {
             await _fakeRouteRepository.DeleteByAsync(mp => mp.Id.Equals(routeId));
+        }
+
+        public Task<IEnumerable<Route>> GetAllFullAsync()
+        {
+            throw new NotImplementedException();
         }
     }
 }

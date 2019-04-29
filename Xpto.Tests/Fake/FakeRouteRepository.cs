@@ -119,7 +119,12 @@ namespace Xpto.Tests.Fake
             return routes;
         }
 
-        public async Task<Route> GetByIdAsync(Guid id, bool asNoTracking = true, Expression<Func<Route, object>> include = null)
+    public Task<IEnumerable<Route>> GetAllFullAsync()
+    {
+      throw new NotImplementedException();
+    }
+
+    public async Task<Route> GetByIdAsync(Guid id, bool asNoTracking = true, Expression<Func<Route, object>> include = null)
         {
             if (!_routes.ContainsKey(id))
                 return null;

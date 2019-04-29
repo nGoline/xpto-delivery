@@ -55,6 +55,9 @@ namespace Xpto.Application.Controllers
         {
             var knownRoute = await _knownRouteService.FindBestRouteAsync(mapPoint1Id, mapPoint2Id);
 
+            if (knownRoute == null)
+                return NotFound("There's no possible route using the provided points.");
+
             return new KnownRouteDTO(knownRoute);
         }
     }

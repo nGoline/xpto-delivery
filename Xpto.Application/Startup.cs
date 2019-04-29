@@ -57,10 +57,12 @@ namespace Xpto.Application
 
             services.AddScoped<IMapPointService, MapPointService>();
             services.AddScoped<IRouteService, RouteService>();
+            services.AddScoped<IKnownRouteService, KnownRouteService>();
             services.AddScoped<IUserService, UserService>();
 
             services.AddScoped<IMapPointRepository, MapPointRepository>();
             services.AddScoped<IRouteRepository, RouteRepository>();
+            services.AddScoped<IKnownRouteRepository, KnownRouteRepository>();
             services.AddScoped<IUserRepository, UserRepository>();
 
             services.AddMvc().ConfigureApiBehaviorOptions(o =>

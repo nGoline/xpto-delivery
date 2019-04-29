@@ -28,6 +28,9 @@ namespace Xpto.Domain.Services
         public async Task<KnownRoute> FindBestRouteAsync(Guid mapPoint1Id, Guid mapPoint2Id)
         {
             var knownRoute = await _repository.FindBestRouteAsync(mapPoint1Id, mapPoint2Id);
+            if (knownRoute == null)
+                return knownRoute;
+
             knownRoute.MapPoints = new List<MapPoint>(knownRoute.MapPointIds.Count);
 
             foreach (var mapPointId in knownRoute.MapPointIds)                

@@ -26,6 +26,7 @@ namespace Xpto.Tests.EntityTests
             route.From = _from;
             route.FromId = _from.Id;
             route.To = _to;
+            route.ToId = _to.Id;
             route.Cost = 10;
             route.Time = 10;
 
